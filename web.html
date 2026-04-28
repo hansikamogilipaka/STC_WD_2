@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Stopwatch</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: #fff;
+}
+.container {
+    width: 350px;
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    text-align: center;
+}
+h1 {
+    margin-bottom: 20px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.time {
+    font-size: 45px;
+    margin: 20px 0;
+    letter-spacing: 2px;
+}
+.buttons {
+    margin-top: 10px;
+}
+
+.buttons button {
+    margin: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.start { background: #28a745; color: white; }
+.pause { background: #ffc107; color: black; }
+.reset { background: #dc3545; color: white; }
+.lap   { background: #17a2b8; color: white; }
+button:hover {
+    transform: scale(1.08);
+    opacity: 0.9;
+}
+.lap-container {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.lap-container h3 {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+ul {
+    list-style: none;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+ul::-webkit-scrollbar {
+    width: 5px;
+}
+
+ul::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+li {
+    background: rgba(255,255,255,0.15);
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+@media (max-width: 400px) {
+    .container {
+        width: 90%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>⏱ Stopwatch</h1>
+
+    <div class="time" id="display">
+        00:00:00:00
+    </div>
+
+    <div class="buttons">
+        <button class="start" onclick="start()">Start</button>
+        <button class="pause" onclick="pause()">Pause</button>
+        <button class="reset" onclick="reset()">Reset</button>
+        <button class="lap" onclick="lap()">Lap</button>
+    </div>
+
+    <div class="lap-container">
+        <h3>Lap Times</h3>
+        <ul id="laps"></ul>
+    </div>
+</div>
+
+<script>
+let timer;
+let ms = 0;
+let seconds = 0;
+let minutes = 0;
+let hours = 0;
+let running = false;
+let lapCount = 1;
+function updateDisplay() {
+    let h = hours < 10 ? "0" + hours : hours;
+    let m = minutes < 10 ? "0" + minutes : minutes;
+    let s = seconds < 10 ? "0" + seconds : seconds;
+    let milli = ms < 10 ? "0" + ms : ms;
+
+    document.getElementById("display").innerText =
+        `${h}:${m}:${s}:${milli}`;
+}
+function start() {
+    if (!running) {
+        running = true;
+
+        timer = setInterval(() => {
+            ms++;
+
+            if (ms === 100) {
+                ms = 0;
+                seconds++;
+            }
+
+            if (seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+
+            if (minutes === 60) {
+                minutes = 0;
+                hours++;
+            }
+
+            updateDisplay();
+        }, 10);
+    }
+}
+function pause() {
+    running = false;
+    clearInterval(timer);
+}
+function reset() {
+    running = false;
+    clearInterval(timer);
+
+    ms = 0;
+    seconds = 0;
+    minutes = 0;
+    hours = 0;
+    lapCount = 1;
+
+    updateDisplay();
+    document.getElementById("laps").innerHTML = "";
+}
+function lap() {
+    if (!running) return;
+
+    let lapTime = document.getElementById("display").innerText;
+
+    let li = document.createElement("li");
+    li.innerText = `Lap ${lapCount++} ➜ ${lapTime}`;
+
+    document.getElementById("laps").appendChild(li);
+}
+</script>
+
+</body>
+</html>
